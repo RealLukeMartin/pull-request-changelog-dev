@@ -1,0 +1,24 @@
+name: Changelog Generator
+on:
+  pull_request:
+    branches:
+      - dev
+    types: [opened, reopened, synchronize, closed]
+
+jobs:
+  changelog:
+    name: Chanegelog Generator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.2
+        with:
+          node-version: "12.x"
+      - name: Dependency installer
+        run: yarn install
+      - name: Build Ts
+        run: ./node_modules/.bin/tsc ./src/index.ts -outDir ./run
+      - name: Changelog Generator
+        run: node ./run/index.js
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
